@@ -54,54 +54,7 @@ LIS2DW12Sensor::LIS2DW12Sensor(TwoWire *i2c, uint8_t address) : dev_i2c(i2c), ad
   reg_ctx.write_reg = LIS2DW12_io_write;
   reg_ctx.read_reg = LIS2DW12_io_read;
   reg_ctx.handle = (void *)this;
-
-    /* Enable register address automatically incremented during a multiple byte
-  access with a serial interface. */
-  if (lis2dw12_auto_increment_set(&reg_ctx, PROPERTY_ENABLE) != 0)
-  {
-    return;
-  }
-
-  /* Enable BDU */
-  if (lis2dw12_block_data_update_set(&reg_ctx, PROPERTY_ENABLE) != 0)
-  {
-    return;
-  }
-
-  /* FIFO mode selection */
-  if (lis2dw12_fifo_mode_set(&reg_ctx, LIS2DW12_BYPASS_MODE) != 0)
-  {
-    return;
-  }
-
-  /* Power mode selection */
-  if (lis2dw12_power_mode_set(&reg_ctx, LIS2DW12_HIGH_PERFORMANCE) != 0)
-  {
-    return;
-  }
-
-  /* Output data rate selection - power down. */
-  if (lis2dw12_data_rate_set(&reg_ctx, LIS2DW12_XL_ODR_OFF) != 0)
-  {
-    return;
-  }
-
-  /* Full scale selection. */
-  if (lis2dw12_full_scale_set(&reg_ctx, LIS2DW12_2g) != 0)
-  {
-    return;
-  }
-
-  /* Select default output data rate. */
-  X_Last_ODR = 100.0f;
-
-  X_Last_Operating_Mode = LIS2DW12_HIGH_PERFORMANCE_MODE;
-
-  X_Last_Noise = LIS2DW12_LOW_NOISE_DISABLE;
-
   X_isEnabled = 0;
-
-  return;
 }
 
 /** Constructor
@@ -114,54 +67,59 @@ LIS2DW12Sensor::LIS2DW12Sensor(SPIClass *spi, int cs_pin, uint32_t spi_speed) : 
   reg_ctx.write_reg = LIS2DW12_io_write;
   reg_ctx.read_reg = LIS2DW12_io_read;
   reg_ctx.handle = (void *)this;
-
-  // Configure CS pin
-  pinMode(cs_pin, OUTPUT);
-  digitalWrite(cs_pin, HIGH); 
   dev_i2c = NULL;
   address = 0;
+  X_isEnabled = 0;
+}
 
-  /* Disable I2C on the component */
-  if (lis2dw12_i2c_interface_set(&reg_ctx, LIS2DW12_I2C_DISABLE) != 0)
+/**
+ * @brief  Configure the sensor in order to be used
+ * @retval 0 in case of success, an error code otherwise
+ */
+LIS2DW12StatusTypeDef LIS2DW12Sensor::begin()
+{
+  if(dev_spi)
   {
-    return;
+    // Configure CS pin
+    pinMode(cs_pin, OUTPUT);
+    digitalWrite(cs_pin, HIGH); 
   }
 
   /* Enable register address automatically incremented during a multiple byte
   access with a serial interface. */
   if (lis2dw12_auto_increment_set(&reg_ctx, PROPERTY_ENABLE) != 0)
   {
-    return;
+    return LIS2DW12_STATUS_ERROR;
   }
 
   /* Enable BDU */
   if (lis2dw12_block_data_update_set(&reg_ctx, PROPERTY_ENABLE) != 0)
   {
-    return;
+    return LIS2DW12_STATUS_ERROR;
   }
 
   /* FIFO mode selection */
   if (lis2dw12_fifo_mode_set(&reg_ctx, LIS2DW12_BYPASS_MODE) != 0)
   {
-    return;
+    return LIS2DW12_STATUS_ERROR;
   }
 
   /* Power mode selection */
   if (lis2dw12_power_mode_set(&reg_ctx, LIS2DW12_HIGH_PERFORMANCE) != 0)
   {
-    return;
+    return LIS2DW12_STATUS_ERROR;
   }
 
   /* Output data rate selection - power down. */
   if (lis2dw12_data_rate_set(&reg_ctx, LIS2DW12_XL_ODR_OFF) != 0)
   {
-    return;
+    return LIS2DW12_STATUS_ERROR;
   }
 
   /* Full scale selection. */
   if (lis2dw12_full_scale_set(&reg_ctx, LIS2DW12_2g) != 0)
   {
-    return;
+    return LIS2DW12_STATUS_ERROR;
   }
 
   /* Select default output data rate. */
@@ -173,7 +131,29 @@ LIS2DW12Sensor::LIS2DW12Sensor(SPIClass *spi, int cs_pin, uint32_t spi_speed) : 
 
   X_isEnabled = 0;
 
-  return;
+  return LIS2DW12_STATUS_OK;
+}
+
+/**
+ * @brief  Disable the sensor and relative resources
+ * @retval 0 in case of success, an error code otherwise
+ */
+LIS2DW12StatusTypeDef LIS2DW12Sensor::end()
+{
+  /* Disable acc */
+  if (Disable_X() != LIS2DW12_STATUS_OK)
+  {
+    return LIS2DW12_STATUS_ERROR;
+  }
+
+  /* Reset CS configuration */
+  if(dev_spi)
+  {
+    // Configure CS pin
+    pinMode(cs_pin, INPUT); 
+  }
+
+  return LIS2DW12_STATUS_OK;
 }
 
 /**
