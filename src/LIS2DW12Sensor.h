@@ -103,6 +103,8 @@ class LIS2DW12Sensor
   public:
     LIS2DW12Sensor(TwoWire *i2c, uint8_t address=LIS2DW12_I2C_ADD_H);
     LIS2DW12Sensor(SPIClass *spi, int cs_pin, uint32_t spi_speed=2000000);
+    LIS2DW12StatusTypeDef begin();
+    LIS2DW12StatusTypeDef end();
     LIS2DW12StatusTypeDef Enable_X(void);
     LIS2DW12StatusTypeDef Disable_X(void);
     LIS2DW12StatusTypeDef ReadID(uint8_t *id);

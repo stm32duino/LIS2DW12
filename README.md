@@ -6,29 +6,32 @@ Arduino library to support the LIS2DW12 3D accelerometer
 This sensor uses I2C or SPI to communicate.
 For I2C it is then required to create a TwoWire interface before accessing to the sensors:  
 
-    dev_i2c = new TwoWire(I2C_SDA, I2C_SCL);  
-    dev_i2c->begin();
+    TwoWire dev_i2c(I2C_SDA, I2C_SCL);  
+    dev_i2c.begin();
 
 For SPI it is then required to create a SPI interface before accessing to the sensors:  
 
-    dev_spi = new SPIClass(SPI_MOSI, SPI_MISO, SPI_SCK);  
-    dev_spi->begin();
+    SPIClass dev_spi(SPI_MOSI, SPI_MISO, SPI_SCK);  
+    dev_spi.begin();
 
-An instance can be created and enbaled when the I2C bus is used following the procedure below:  
+An instance can be created and enabled when the I2C bus is used following the procedure below:  
 
-    Accelero = new LIS2DW12Sensor(dev_i2c);  
-    Accelero->Enable();
+    LIS2DW12Sensor Accelero(&dev_i2c);
+    Accelero.begin();
+    Accelero.Enable_X();
 
-An instance can be created and enbaled when the SPI bus is used following the procedure below:  
+An instance can be created and enabled when the SPI bus is used following the procedure below:  
 
-    Accelero = new LIS2DW12Sensor(dev_spi, CS_PIN);  
-    Accelero->Enable();
+    LIS2DW12Sensor Accelero(&dev_spi, CS_PIN);  
+    Accelero.begin();
+    Accelero.Enable_X();
 
 The access to the sensor values is done as explained below:  
 
   Read accelerometer.  
 
-    Accelero->GetAxes(&accelerometer);  
+    int32_t accelerometer[3];
+    Accelero.Get_X_Axes(accelerometer);  
 
 ## Documentation
 
