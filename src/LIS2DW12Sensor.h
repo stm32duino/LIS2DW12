@@ -44,7 +44,7 @@
 
 
 /* Includes ------------------------------------------------------------------*/
-
+#include <Arduino.h>
 #include "Wire.h"
 #include "SPI.h"
 #include "lis2dw12_reg.h"
