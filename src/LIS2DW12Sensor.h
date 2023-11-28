@@ -50,6 +50,7 @@
 #include "lis2dw12_reg.h"
 
 /* Defines -------------------------------------------------------------------*/
+/* For compatibility with ESP32 platforms */
 #ifdef ESP32
   #ifndef MSBFIRST
     #define MSBFIRST SPI_MSBFIRST
