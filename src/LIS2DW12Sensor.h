@@ -50,6 +50,11 @@
 #include "lis2dw12_reg.h"
 
 /* Defines -------------------------------------------------------------------*/
+#ifdef ESP32
+  #ifndef MSBFIRST
+    #define MSBFIRST SPI_MSBFIRST
+  #endif
+#endif
 
 #define LIS2DW12_ACC_SENSITIVITY_FOR_FS_2G_LOPOW1_MODE   0.976f  /**< Sensitivity value for 2g full scale, Low-power1 mode [mg/LSB] */
 #define LIS2DW12_ACC_SENSITIVITY_FOR_FS_2G_OTHER_MODES   0.244f  /**< Sensitivity value for 2g full scale, all other modes except Low-power1 [mg/LSB] */
